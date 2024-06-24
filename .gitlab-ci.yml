@@ -1,0 +1,26 @@
+stages:
+  - fetch_data
+  - compare_data
+
+fetch_data:
+  stage: fetch_data
+  script:
+    - chmod +x scripts/fetch_data.sh
+    - ./scripts/fetch_data.sh
+  artifacts:
+    paths:
+      - cache-prod-edcr-instance-data.json
+      - cache-prod-edco-instance-data.json
+    expire_in: 1 hour
+
+compare_data:
+  stage: compare_data
+  script:
+    - chmod +x scripts/compare_data.sh
+    - ./scripts/compare_data.sh
+  dependencies:
+    - fetch_data
+  artifacts:
+    paths:
+      - differences.json
+    expire_in: 1 hour
