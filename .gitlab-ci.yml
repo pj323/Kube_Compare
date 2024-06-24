@@ -2,16 +2,41 @@ stages:
   - fetch_data
   - compare_data
 
-fetch_data:
+variables:
+  NAMESPACE: "tp-cache-prod-b"
+  CLUSTER_A: "EDCR"
+  CLUSTER_B: "EDCO"
+  RUNNER_A: "tp2-edcr-prod-a"
+  RUNNER_B: "tp2-edco-prod-a"
+
+fetch_data_from_edcr:
   stage: fetch_data
+  tags:
+    - $RUNNER_A
   script:
     - chmod +x scripts/fetch_data.sh
-    - ./scripts/fetch_data.sh
+    - ./scripts/fetch_data.sh $NAMESPACE $CLUSTER_A $RUNNER_A
   artifacts:
     paths:
-      - cache-prod-edcr-instance-data.json
-      - cache-prod-edco-instance-data.json
+      - cache-prod-${CLUSTER_A}-${NAMESPACE}.json
     expire_in: 1 hour
+  only:
+    - master
+
+fetch_data_from_edco:
+  stage: fetch_data
+  tags:
+    - $RUNNER_B
+  script:
+    - chmod +x scripts/fetch_data.sh
+    - ./scripts/fetch_data.sh $NAMESPACE $CLUSTER_B $RUNNER_B
+  artifacts:
+    paths:
+      - cache-prod-${CLUSTER_B}-${NAMESPACE}.json
+    expire_in: 1 hour
+  only:
+    - master
+
 
 compare_data:
   stage: compare_data
@@ -19,7 +44,8 @@ compare_data:
     - chmod +x scripts/compare_data.sh
     - ./scripts/compare_data.sh
   dependencies:
-    - fetch_data
+    - fetch_data_from_edcr
+    - fetch_data_from_edco
   artifacts:
     paths:
       - differences.json
