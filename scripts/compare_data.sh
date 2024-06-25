@@ -9,11 +9,11 @@ jq --slurpfile a $FILE_A --slurpfile b $FILE_B -n '
 {
   in_a_not_in_b: [
     $a[0].items[] | select(.metadata.labels["app.kubernetes.io/name"] as $name_a | 
-      none($b[0].items[] | .metadata.labels["app.kubernetes.io/name"] == $name_a))
+      $b[0].items[] | map(.metadata.labels["app.kubernetes.io/name"]) | index($name_a) | not)
   ],
   in_b_not_in_a: [
     $b[0].items[] | select(.metadata.labels["app.kubernetes.io/name"] as $name_b | 
-      none($a[0].items[] | .metadata.labels["app.kubernetes.io/name"] == $name_b))
+      $a[0].items[] | map(.metadata.labels["app.kubernetes.io/name"]) | index($name_b) | not)
   ],
   diff_replicas: [
     $a[0].items[] | . as $aItem | 
