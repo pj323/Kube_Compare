@@ -41,12 +41,10 @@ jq --slurpfile a $FILE_A --slurpfile b $FILE_B -n '
 cat differences.json
 
 |
-      jq --argfile a data_${CLUSTER_A_CONTEXT}_${NAMESPACE}.json --argfile b data_${CLUSTER_B_CONTEXT}_${NAMESPACE}.json -n '
-      def compareSets: . as $root | .items[] | {name: .metadata.name, replicas: .spec.replicas};
-      ($a | compareSets) as $setA | ($b | compareSets) as $setB
-      | [$setA, $setB]
-      | transpose
-      | map(select(.[0].name == .[1].name))
-      | map(select(.[0].replicas != .[1].replicas))
-      | map({name: .[0].name, A_replicas: .[0].replicas, B_replicas: .[1].replicas})
-      ' > differences.json
+      jq --argfile a ${CLUSTER_A}_${NAMESPACE}.json --argfile b ${CLUSTER_B}_${NAMESPACE}.json -n '
+      ($a.items[] | {name: .metadata.name, replicas: .spec.replicas}) as $itemsA
+      | ($b.items[] | {name: .metadata.name, replicas: .spec.replicas}) as $itemsB
+      | if $itemsA.name == $itemsB.name and $itemsA.replicas != $itemsB.replicas 
+        then {name: $itemsA.name, A_replicas: $itemsA.replicas, B_replicas: $itemsB.replicas}
+        else empty
+      end' > differences.json
