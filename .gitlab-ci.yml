@@ -41,8 +41,15 @@ fetch_data_from_edco:
 compare_data:
   stage: compare_data
   script:
+    - pwd  # Print the current working directory
+    - echo "Listing scripts directory"
+    - ls -la scripts/
+    - echo "Displaying script content"
+    - cat scripts/compare_data.sh
+    - echo "Making script executable"
     - chmod +x scripts/compare_data.sh
-    - ./scripts/compare_data.sh
+    - echo "Running script with absolute path"
+    - $(pwd)/scripts/compare_data.sh ${CLUSTER_A}-${NAMESPACE}.json ${CLUSTER_B}-${NAMESPACE}.json
   dependencies:
     - fetch_data_from_edcr
     - fetch_data_from_edco
