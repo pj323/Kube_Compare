@@ -39,3 +39,11 @@ jq --slurpfile a $FILE_A --slurpfile b $FILE_B -n '
 
 # Print differences to console
 cat differences.json
+
+
+    - jq --argfile a data_${CLUSTER_A_CONTEXT}_${NAMESPACE}.json --argfile b data_${CLUSTER_B_CONTEXT}_${NAMESPACE}.json -n '
+        ($a.items[] | {name: .metadata.name, replicas: .spec.replicas}) as $itemA
+        | ($b.items[] | {name: .metadata.name, replicas: .spec.replicas}) as $itemB
+        | select($itemA.name == $itemB.name)
+        | if $itemA.replicas == $itemB.replicas then empty else {name: $itemA.name, A_replicas: $itemA.replicas, B_replicas: $itemB.replicas} end'
+      > differences.json
