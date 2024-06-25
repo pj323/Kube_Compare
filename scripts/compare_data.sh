@@ -5,8 +5,8 @@ FILE_A="cache-prod-edcr-instance-data.json"
 FILE_B="cache-prod-edco-instance-data.json"
 
 # Use jq to compare files and find differences
-jq --argfile a $FILE_A --argfile b $FILE_B -n '
-  [($a.items[] | {
+jq --slurpfile a $FILE_A --slurpfile b $FILE_B -n '
+  [($a[0].items[] | {
     name: .metadata.labels["app.kubernetes.io/name"],
     replicas: .spec.replicas,
     containers: .spec.template.spec.containers | map({
@@ -17,7 +17,7 @@ jq --argfile a $FILE_A --argfile b $FILE_B -n '
       memory_limit: .resources.limits.memory
     })
   })] as $aList |
-  [($b.items[] | {
+  [($b[0].items[] | {
     name: .metadata.labels["app.kubernetes.io/name"],
     replicas: .spec.replicas,
     containers: .spec.template.spec.containers | map({
