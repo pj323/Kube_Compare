@@ -96,3 +96,43 @@ cat differences.json
       end' > differences.json
 ____________________________________
 ____________________________________
+
+
+
+- |
+      jq --argfile a ${CLUSTER_A}-${NAMESPACE}.json --argfile b ${CLUSTER_B}-${NAMESPACE}.json -n '
+        ($a.items[] | {
+          name: .metadata.name,
+          replicas: .spec.replicas,
+          cpu_limits: .spec.template.spec.containers[0].resources.limits.cpu,
+          memory_limits: .spec.template.spec.containers[0].resources.limits.memory,
+          storage_limits: .spec.template.spec.containers[0].resources.limits["ephemeral-storage"],
+          cpu_requests: .spec.template.spec.containers[0].resources.requests.cpu,
+          memory_requests: .spec.template.spec.containers[0].resources.requests.memory,
+          storage_requests: .spec.template.spec.containers[0].resources.requests["ephemeral-storage"]
+        }) as $itemA
+        | ($b.items[] | {
+          name: .metadata.name,
+          replicas: .spec.replicas,
+          cpu_limits: .spec.template.spec.containers[0].resources.limits.cpu,
+          memory_limits: .spec.template.spec.containers[0].resources.limits.memory,
+          storage_limits: .spec.template.spec.containers[0].resources.limits["ephemeral-storage"],
+          cpu_requests: .spec.template.spec.containers[0].resources.requests.cpu,
+          memory_requests: .spec.template.spec.containers[0].resources.requests.memory,
+          storage_requests: .spec.template.spec.containers[0].resources.requests["ephemeral-storage"]
+        }) as $itemB
+        | if $itemA.name == $itemB.name then
+          {
+            name: $itemA.name,
+            differences: {
+              replicas: (if $itemA.replicas != $itemB.replicas then {"A": $itemA.replicas, "B": $itemB.replicas} else empty end),
+              cpu_limits: (if $itemA.cpu_limits != $itemB.cpu_limits then {"A": $itemA.cpu_limits, "B": $itemB.cpu_limits} else empty end),
+              memory_limits: (if $itemA.memory_limits != $itemB.memory_limits then {"A": $itemA.memory_limits, "B": $itemB.memory_limits} else empty end),
+              storage_limits: (if $itemA.storage_limits != $itemB.storage_limits then {"A": $itemA.storage_limits, "B": $itemB.storage_limits} else empty end),
+              cpu_requests: (if $itemA.cpu_requests != $itemB.cpu_requests then {"A": $itemA.cpu_requests, "B": $itemB.cpu_requests} else empty end),
+              memory_requests: (if $itemA.memory_requests != $itemB.memory_requests then {"A": $itemA.memory_requests, "B": $itemB.memory_requests} else empty end),
+              storage_requests: (if $itemA.storage_requests != $itemB.storage_requests then {"A": $itemA.storage_requests, "B": $itemB.storage_requests} else empty end)
+            }
+          }
+          else empty
+        end' > differences.json
