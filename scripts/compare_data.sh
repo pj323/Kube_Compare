@@ -190,3 +190,49 @@ ____________________________________
       echo "Comparison completed. Output saved to differences.json."
       echo "Differences:"
       cat differences.json
+
+
+
+
+
+
+
+
+      - |
+      echo "Loading JSON files..."
+      # Direct jq operations to verify file structure and contents
+      jq '.' ${CLUSTER_A}-${NAMESPACE}.json | head
+      jq '.' ${CLUSTER_B}-${NAMESPACE}.json | head
+
+      # Use jq to parse and output data for inspection, storing results temporarily
+      jq '.items[] | {name: .metadata.name, replicas: .spec.replicas}' ${CLUSTER_A}-${NAMESPACE}.json > itemA.json
+      jq '.items[] | {name: .metadata.name, replicas: .spec.replicas}' ${CLUSTER_B}-${NAMESPACE}.json > itemB.json
+
+      echo "Data from Cluster A:"
+      cat itemA.json | head -n 3
+
+      echo "Data from Cluster B:"
+      cat itemB.json | head -n 3
+
+      # Perform comparison using stored JSON data
+      jq --slurpfile itemA itemA.json --slurpfile itemB itemB.json -n '
+        ($itemA[] as $a | $itemB[] as $b
+        | if $a.name == $b.name then
+            {
+              name: $a.name,
+              differences: {
+                replicas: (if $a.replicas != $b.replicas then {"A": $a.replicas, "B": $b.replicas} else empty end),
+                cpu_limits: (if $a.cpu_limits != $b.cpu_limits then {"A": $a.cpu_limits, "B": $b.cpu_limits} else empty end),
+                memory_limits: (if $a.memory_limits != $b.memory_limits then {"A": $a.memory_limits, "B": $b.memory_limits} else empty end),
+                storage_limits: (if $a.storage_limits != $b.storage_limits then {"A": $a.storage_limits, "B": $b.storage_limits} else empty end),
+                cpu_requests: (if $a.cpu_requests != $b.cpu_requests then {"A": $a.cpu_requests, "B": $b.cpu_requests} else empty end),
+                memory_requests: (if $a.memory_requests != $b.memory_requests then {"A": $a.memory_requests, "B": $b.memory_requests} else empty end),
+                storage_requests: (if $a.storage_requests != $b.storage_requests then {"A": $a.storage_requests, "B": $b.storage_requests} else empty end)
+              }
+            }
+          else empty
+        end)' > differences.json
+
+      echo "Comparison completed. Output saved to differences.json."
+      echo "Differences found:"
+      cat differences.json
