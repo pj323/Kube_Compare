@@ -51,7 +51,11 @@ cat differences.json
 
 
 
-   - |
+  - |
+      echo "Printing sample data from both files to verify structure and data:"
+      jq '.' data_${CLUSTER_A_CONTEXT}_${NAMESPACE}.json | head -n 20
+      jq '.' data_${CLUSTER_B_CONTEXT}_${NAMESPACE}.json | head -n 20
+
       jq --argfile a data_${CLUSTER_A_CONTEXT}_${NAMESPACE}.json --argfile b data_${CLUSTER_B_CONTEXT}_${NAMESPACE}.json -n '
       ($a.items[] | {name: .metadata.name, replicas: .spec.replicas, cpu_limits: .spec.template.spec.containers[0].resources.limits.cpu, memory_limits: .spec.template.spec.containers[0].resources.limits.memory, storage_limits: .spec.template.spec.containers[0].resources.limits["ephemeral-storage"], cpu_requests: .spec.template.spec.containers[0].resources.requests.cpu, memory_requests: .spec.template.spec.containers[0].resources.requests.memory, storage_requests: .spec.template.spec.containers[0].resources.requests["ephemeral-storage"]}) as $itemA
       | ($b.items[] | {name: .metadata.name, replicas: .spec.replicas, cpu_limits: .spec.template.spec.containers[0].resources.limits.cpu, memory_limits: .spec.template.spec.containers[0].resources.limits.memory, storage_limits: .spec.template.spec.containers[0].resources.limits["ephemeral-storage"], cpu_requests: .spec.template.spec.containers[0].resources.requests.cpu, memory_requests: .spec.template.spec.containers[0].resources.requests.memory, storage_requests: .spec.template.spec.containers[0].resources.requests["ephemeral-storage"]}) as $itemB
