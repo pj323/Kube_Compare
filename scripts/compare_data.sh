@@ -53,28 +53,28 @@ cat differences.json
 
 - |
       jq --argfile a data_${CLUSTER_A_CONTEXT}_${NAMESPACE}.json --argfile b data_${CLUSTER_B_CONTEXT}_${NAMESPACE}.json -n '
-      def safe_compare($fieldA; $fieldB; $label):
-        if $fieldA != $fieldB and ($fieldA | length) > 0 and ($fieldB | length) > 0 then
-          {($label): {"A": $fieldA, "B": $fieldB}}
-        else
-          empty
-        end;
-      ($a.items[] | {name: .metadata.name, replicas: .spec.replicas, resources: .spec.template.spec.containers[0].resources}) as $itemsA
-      | ($b.items[] | {name: .metadata.name, replicas: .spec.replicas, resources: .spec.template.spec.containers[0].resources}) as $itemsB
-      | if $itemsA.name == $itemsB.name then 
-        {
-          name: $itemsA.name,
-          differences: [
-            ($itemsA.replicas | tostring) as $repA
-            | ($itemsB.replicas | tostring) as $repB
-            | safe_compare($repA; $repB; "replicas"),
-            safe_compare($itemsA.resources.limits.cpu; $itemsB.resources.limits.cpu; "cpu_limits"),
-            safe_compare($itemsA.resources.limits.memory; $itemsB.resources.limits.memory; "memory_limits"),
-            safe_compare($itemsA.resources.limits["ephemeral-storage"]; $itemsB.resources.limits["ephemeral-storage"]; "storage_limits"),
-            safe_compare($itemsA.resources.requests.cpu; $itemsB.resources.requests.cpu; "cpu_requests"),
-            safe_compare($itemsA.resources.requests.memory; $itemsB.resources.requests.memory; "memory_requests"),
-            safe_compare($itemsA.resources.requests["ephemeral-storage"]; $itemsB.resources.requests["ephemeral-storage"; "storage_requests")
-          ] | add
-        }
-        else empty
-      end' > differences.json
+        def safe_compare($fieldA; $fieldB; $label):
+          if ($fieldA | length > 0) and ($fieldB | length > 0) and ($fieldA != $fieldB) then
+            {($label): {"A": $fieldA, "B": $fieldB}}
+          else
+            empty
+          end;
+        ($a.items[] | {name: .metadata.name, replicas: .spec.replicas, resources: .spec.template.spec.containers[0].resources}) as $itemsA
+        | ($b.items[] | {name: .metadata.name, replicas: .spec.replicas, resources: .spec.template.spec.containers[0].resources}) as $itemsB
+        | if $itemsA.name == $itemsB.name then 
+          {
+            name: $itemsA.name,
+            differences: [
+              ($itemsA.replicas | tostring) as $repA
+              | ($itemsB.replicas | tostring) as $repB
+              | safe_compare($repA; $repB; "replicas"),
+              safe_compare($itemsA.resources.limits.cpu; $itemsB.resources.limits.cpu; "cpu_limits"),
+              safe_compare($itemsA.resources.limits.memory; $itemsB.resources.limits.memory; "memory_limits"),
+              safe_compare($itemsA.resources.limits["ephemeral-storage"]; $itemsB.resources.limits["ephemeral-storage"]; "storage_limits"),
+              safe_compare($itemsA.resources.requests.cpu; $itemsB.resources.requests.cpu; "cpu_requests"),
+              safe_compare($itemsA.resources.requests.memory; $itemsB.resources.requests.memory; "memory_requests"),
+              safe_compare($itemsA.resources.requests["ephemeral-storage"]; $itemsB.resources.requests["ephemeral-storage"; "storage_requests")
+            ] | add
+          }
+          else empty
+        end' > differences.json
