@@ -74,3 +74,23 @@ cat differences.json
         }
         else empty
         end' > differences.json
+
+
+
+        - |
+      echo "Printing sample data from both files to verify structure and data:"
+      jq '.' data_${CLUSTER_A_CONTEXT}_${NAMESPACE}.json | head -n 50
+      jq '.' data_${CLUSTER_B_CONTEXT}_${NAMESPACE}.json | head -n 50
+
+      jq --argfile a data_${CLUSTER_A_CONTEXT}_${NAMESPACE}.json --argfile b data_${CLUSTER_B_CONTEXT}_${NAMESPACE}.json -n '
+      ($a.items[] | {name: .metadata.name, replicas: .spec.replicas}) as $itemA
+      | ($b.items[] | {name: .metadata.name, replicas: .spec.replicas}) as $itemB
+      | if $itemA.name == $itemB.name then
+        {
+          name: $itemA.name,
+          differences: {
+            replicas: (if $itemA.replicas != $itemB.replicas then {"A": $itemA.replicas, "B": $itemB.replicas} else empty end)
+          }
+        }
+        else empty
+      end' > differences.json
