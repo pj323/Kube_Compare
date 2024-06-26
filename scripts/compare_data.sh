@@ -136,3 +136,57 @@ ____________________________________
           }
           else empty
         end' > differences.json
+
+
+
+
+
+        - |
+      echo "Loading JSON files..."
+      jq '.' ${CLUSTER_A}-${NAMESPACE}.json > /dev/null
+      jq '.' ${CLUSTER_B}-${NAMESPACE}.json > /dev/null
+      echo "JSON files loaded successfully."
+
+      echo "Extracting data and preparing for comparison..."
+      jq --argfile a ${CLUSTER_A}-${NAMESPACE}.json --argfile b ${CLUSTER_B}-${NAMESPACE}.json -n '
+        ($a.items[] | {
+          name: .metadata.name,
+          replicas: .spec.replicas,
+          cpu_limits: .spec.template.spec.containers[0].resources.limits.cpu,
+          memory_limits: .spec.template.spec.containers[0].resources.limits.memory,
+          storage_limits: .spec.template.spec.containers[0].resources.limits["ephemeral-storage"],
+          cpu_requests: .spec.template.spec.containers[0].resources.requests.cpu,
+          memory_requests: .spec.template.spec.containers[0].resources.requests.memory,
+          storage_requests: .spec.template.spec.containers[0].resources.requests["ephemeral-storage"]
+        } | tojson) as $itemA
+        | echo "Item from Cluster A: " $itemA
+        | ($b.items[] | {
+          name: .metadata.name,
+          replicas: .spec.replicas,
+          cpu_limits: .spec.template.spec.containers[0].resources.limits.cpu,
+          memory_limits: .spec.template.spec.containers[0].resources.limits.memory,
+          storage_limits: .spec.template.spec.containers[0].resources.limits["ephemeral-storage"],
+          cpu_requests: .spec.template.spec.containers[0].resources.requests.cpu,
+          memory_requests: .spec.template.spec.containers[0].resources.requests.memory,
+          storage_requests: .spec.template.spec.containers[0].resources.requests["ephemeral-storage"]
+        } | tojson) as $itemB
+        | echo "Item from Cluster B: " $itemB
+        | if $itemA.name == $itemB.name then
+          {
+            name: $itemA.name,
+            differences: {
+              replicas: (if $itemA.replicas != $itemB.replicas then {"A": $itemA.replicas, "B": $itemB.replicas} else "No difference in replicas"),
+              cpu_limits: (if $itemA.cpu_limits != $itemB.cpu_limits then {"A": $itemA.cpu_limits, "B": $itemB.cpu_limits} else "No difference in CPU limits"),
+              memory_limits: (if $itemA.memory_limits != $itemB.memory_limits then {"A": $itemA.memory_limits, "B": $itemB.memory_limits} else "No difference in memory limits"),
+              storage_limits: (if $itemA.storage_limits != $itemB.storage_limits then {"A": $itemA.storage_limits, "B": $itemB.storage_limits} else "No difference in storage limits"),
+              cpu_requests: (if $itemA.cpu_requests != $itemB.cpu_requests then {"A": $itemA.cpu_requests, "B": $itemB.cpu_requests} else "No difference in CPU requests"),
+              memory_requests: (if $itemA.memory_requests != $itemB.memory_requests then {"A": $itemA.memory_requests, "B": $itemB.memory_requests} else "No difference in memory requests"),
+              storage_requests: (if $itemA.storage_requests != $itemB.storage_requests then {"A": $itemA.storage_requests, "B": $itemB.storage_requests} else "No difference in storage requests")
+            } | tojson
+          }
+          else
+            echo "No matching names found or no differences"
+        end' > differences.json
+      echo "Comparison completed. Output saved to differences.json."
+      echo "Differences:"
+      cat differences.json
