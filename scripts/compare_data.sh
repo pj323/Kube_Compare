@@ -227,14 +227,12 @@ ____________________________________
 
 
 
-      - |
-      echo "Verifying JSON file from Cluster A:"
+     - |
+      echo "Loading JSON files..."
       cat ${CLUSTER_A}-${NAMESPACE}.json | jq . || echo "Failed to parse JSON from Cluster A"
-      
-      echo "Verifying JSON file from Cluster B:"
       cat ${CLUSTER_B}-${NAMESPACE}.json | jq . || echo "Failed to parse JSON from Cluster B"
 
-      echo "Performing extended comparison for additional resource checks..."
+      echo "Performing detailed resource comparison..."
       jq --argfile a ${CLUSTER_A}-${NAMESPACE}.json --argfile b ${CLUSTER_B}-${NAMESPACE}.json -n '
         ($a.items[] | {
           name: .metadata.name,
@@ -259,18 +257,19 @@ ____________________________________
         | if $itemA.name == $itemB.name then
           {
             "Name": $itemA.name,
-            "Replicas Difference": (if $itemA.replicas != $itemB.replicas then {"A": $itemA.replicas, "B": $itemB.replicas} else "No difference"),
-            "CPU Limits Difference": (if $itemA.cpu_limits != $itemB.cpu_limits then {"A": $itemA.cpu_limits, "B": $itemB.cpu_limits} else "No difference"),
-            "Memory Limits Difference": (if $itemA.memory_limits != $itemB.memory_limits then {"A": $itemA.memory_limits, "B": $itemB.memory_limits} else "No difference"),
-            "Storage Limits Difference": (if $itemA.storage_limits != $itemB.storage_limits then {"A": $itemA.storage_limits, "B": $itemB.storage_limits} else "No difference"),
-            "CPU Requests Difference": (if $itemA.cpu_requests != $itemB.cpu_requests then {"A": $itemA.cpu_requests, "B": $itemB.cpu_requests} else "No difference"),
-            "Memory Requests Difference": (if $itemA.memory_requests != $itemB.memory_requests then {"A": $itemA.memory_requests, "B": $itemB.memory_requests} else "No difference"),
-            "Storage Requests Difference": (if $itemA.storage_requests != $itemB.storage_requests then {"A": $itemA.storage_requests, "B": $itemB.storage_requests} else "No difference")
+            "Differences": {
+              "Replicas": (if $itemA.replicas != $itemB.replicas then {"A": $itemA.replicas, "B": $itemB.replicas} else "No difference" end),
+              "CPU Limits": (if $itemA.cpu_limits != $itemB.cpu_limits then {"A": $itemA.cpu_limits, "B": $itemB.cpu_limits} else "No difference" end),
+              "Memory Limits": (if $itemA.memory_limits != $itemB.memory_limits then {"A": $itemA.memory_limits, "B": $itemB.memory_limits} else "No difference" end),
+              "Storage Limits": (if $itemA.storage_limits != $itemB.storage_limits then {"A": $itemA.storage_limits, "B": $itemB.storage_limits} else "No difference" end),
+              "CPU Requests": (if $itemA.cpu_requests != $itemB.cpu_requests then {"A": $itemA.cpu_requests, "B": $itemB.cpu_requests} else "No difference" end),
+              "Memory Requests": (if $itemA.memory_requests != $itemB.memory_requests then {"A": $itemA.memory_requests, "B": $itemB.memory_requests} else "No difference" end),
+              "Storage Requests": (if $itemA.storage_requests != $itemB.storage_requests then {"A": $itemA.storage_requests, "B": $itemB.storage_requests} else "No difference" end)
+            }
           }
           else
             { "Name": $itemA.name, "Message": "No matching name found or no differences" }
-        end' | tee differences.json
+        end' > differences.json
 
-      echo "Comparison completed. Extended resource checks included. Output saved to differences.json."
-      echo "Differences found:"
+      echo "Comparison completed. Check the output for details."
       cat differences.json
