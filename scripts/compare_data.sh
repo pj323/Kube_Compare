@@ -299,24 +299,22 @@ ____________________________________
 
 
 
-
-        compare_replicas:
-  stage: compare_replicas
-  image: docker:latest
-  script:
-    - apk add --no-cache jq
-    - |
+- |
       echo "Comparing replica configurations..."
-      jq -s 'reduce .[] as $items ({}; . * $items)' cache-test-data.json cache-prep-data.json cache-prod-data.json | jq '
+      jq -s '
+        map(select(.items != null)) | add | .items[] | 
+        {
+          name: .metadata.name, 
+          replicas: .spec.replicas
+        }
+      ' cache-test-data.json cache-prep-data.json cache-prod-data.json > combined.json
+
+      jq '
         group_by(.name) | map({
           name: .[0].name,
-          test_replicas: (map(select(.name == .[0].name and contains("test"))) | .[].replicas),
-          prep_replicas: (map(select(.name == .[0].name and contains("prep"))) | .[].replicas),
-          prod_replicas: (map(select(.name == .[0].name and contains("prod"))) | .[].replicas)
-        })' > replica-differences.json
+          test_replicas: (map(select(.name | test("cache-test"))) | .[].replicas),
+          prep_replicas: (map(select(.name | test("cache-prep"))) | .[].replicas),
+          prod_replicas: (map(select(.name | test("cache-prod"))) | .[].replicas)
+        })
+      ' combined.json > replica-differences.json
       cat replica-differences.json
-  artifacts:
-    paths:
-
-      echo "Comparison completed. Check the output for details."
-      cat differences.json
