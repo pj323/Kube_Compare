@@ -271,5 +271,52 @@ ____________________________________
             { "Name": $itemA.name, "Message": "No matching name found or no differences" }
         end' > differences.json
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        compare_replicas:
+  stage: compare_replicas
+  image: docker:latest
+  script:
+    - apk add --no-cache jq
+    - |
+      echo "Comparing replica configurations..."
+      jq -s 'reduce .[] as $items ({}; . * $items)' cache-test-data.json cache-prep-data.json cache-prod-data.json | jq '
+        group_by(.name) | map({
+          name: .[0].name,
+          test_replicas: (map(select(.name == .[0].name and contains("test"))) | .[].replicas),
+          prep_replicas: (map(select(.name == .[0].name and contains("prep"))) | .[].replicas),
+          prod_replicas: (map(select(.name == .[0].name and contains("prod"))) | .[].replicas)
+        })' > replica-differences.json
+      cat replica-differences.json
+  artifacts:
+    paths:
+
       echo "Comparison completed. Check the output for details."
       cat differences.json
