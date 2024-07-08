@@ -300,21 +300,23 @@ ____________________________________
 
 
 - |
-      echo "Comparing replica configurations..."
-      jq -s '
-        map(select(.items != null)) | add | .items[] | 
-        {
-          name: .metadata.name, 
-          replicas: .spec.replicas
-        }
-      ' cache-test-data.json cache-prep-data.json cache-prod-data.json > combined.json
+      echo "Loading JSON data..."
+      jq --argfile test cache-test-data.json --argfile prep cache-prep-data.json --argfile prod cache-prod-data.json -n '
+        ($test.items[] | {name: (.metadata.name | split("-")[0]), replicas: .spec.replicas}) as $itemsTest
+        | ($prep.items[] | {name: (.metadata.name | split("-")[0]), replicas: .spec.replicas}) as $itemsPrep
+        | ($prod.items[] | {name: (.metadata.name | split("-")[0]), replicas: .spec.replicas}) as $itemsProd
+        | if ($itemsTest.name == $itemsPrep.name and $itemsTest.name == $itemsProd.name) then
+          {
+            BaseName: $itemsTest.name,
+            Test_replicas: $itemsTest.replicas,
+            Prep_replicas: $itemsPrep.replicas,
+            Prod_replicas: $itemsProd.replicas
+          }
+          | select(.Test_replicas != .Prep_replicas or .Test_replicas != .Prod_replicas or .Prep_replicas != .Prod_replicas)
+          else
+            empty
+          end
+      ' > differences.json
 
-      jq '
-        group_by(.name) | map({
-          name: .[0].name,
-          test_replicas: (map(select(.name | test("cache-test"))) | .[].replicas),
-          prep_replicas: (map(select(.name | test("cache-prep"))) | .[].replicas),
-          prod_replicas: (map(select(.name | test("cache-prod"))) | .[].replicas)
-        })
-      ' combined.json > replica-differences.json
-      cat replica-differences.json
+      echo "Comparison of replicas across clusters completed. Differences:"
+      cat differences.json
