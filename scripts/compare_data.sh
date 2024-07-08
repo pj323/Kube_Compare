@@ -352,3 +352,48 @@ ____________________________________
       cat differences.json
       echo "All replicas:"
       cat all-replicas.json
+
+
+
+
+
+- |
+      echo "Loading JSON data..."
+      # Combine and normalize data from all clusters
+      jq --argfile test cache-test-data.json --argfile prep cache-prep-data.json --argfile prod cache-prod-data.json -n '
+        ($test.items[] | {BaseName: (.metadata.name | split("-")[0]), test_replicas: .spec.replicas}) as $itemsTest
+        | ($prep.items[] | {BaseName: (.metadata.name | split("-")[0]), prep_replicas: .spec.replicas}) as $itemsPrep
+        | ($prod.items[] | {BaseName: (.metadata.name | split("-")[0]), prod_replicas: .spec.replicas}) as $itemsProd
+        | [$itemsTest, $itemsPrep, $itemsProd]
+      ' > temp-replicas.json
+
+      # Create a new file with all the base names and their replicas from each cluster
+      jq -s '
+        add | group_by(.BaseName) | map({
+          BaseName: .[0].BaseName,
+          Test_replicas: (map(select(.test_replicas)) | .[].test_replicas),
+          Prep_replicas: (map(select(.prep_replicas)) | .[].prep_replicas),
+          Prod_replicas: (map(select(.prod_replicas)) | .[].prod_replicas)
+        })
+      ' temp-replicas.json > all-replicas.json
+
+      # Now perform comparisons
+      jq '
+        group_by(.BaseName) | map({
+          BaseName: .[0].BaseName,
+          replicas: {
+            Test: (map(select(.test_replicas)) | .[].test_replicas),
+            Prep: (map(select(.prep_replicas)) | .[].prep_replicas),
+            Prod: (map(select(.prod_replicas)) | .[].prod_replicas)
+          }
+        }) | map(select(
+          .replicas.Test != .replicas.Prep or 
+          .replicas.Test != .replicas.Prod or 
+          .replicas.Prep != .replicas.Prod
+        ))
+      ' all-replicas.json > differences.json
+
+      echo "All replicas across clusters:"
+      cat all-replicas.json
+      echo "Comparison of replicas across clusters completed. Differences:"
+      cat differences.json
