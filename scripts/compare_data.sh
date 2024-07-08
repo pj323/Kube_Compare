@@ -397,3 +397,50 @@ ____________________________________
       cat all-replicas.json
       echo "Comparison of replicas across clusters completed. Differences:"
       cat differences.json
+
+
+
+
+
+
+
+- |
+      echo "Loading JSON data..."
+      # Collect and normalize data from all clusters, then save it
+      jq --argfile test cache-test-data.json --argfile prep cache-prep-data.json --argfile prod cache-prod-data.json -n '
+        ($test.items[] | {BaseName: (.metadata.name | split("-")[0]), Test_replicas: .spec.replicas}) as $itemsTest
+        | ($prep.items[] | {BaseName: (.metadata.name | split("-")[0]), Prep_replicas: .spec.replicas}) as $itemsPrep
+        | ($prod.items[] | {BaseName: (.metadata.name | split("-")[0]), Prod_replicas: .spec.replicas}) as $itemsProd
+        | [$itemsTest, $itemsPrep, $itemsProd]
+      ' | jq -s '
+        group_by(.BaseName) | map({
+          BaseName: .[0].BaseName,
+          Test_replicas: map(select(.Test_replicas)) | .[].Test_replicas,
+          Prep_replicas: map(select(.Prep_replicas)) | .[].Prep_replicas,
+          Prod_replicas: map(select(.Prod_replicas)) | .[].Prod_replicas
+        })
+      ' > all-replicas.json
+
+      echo "All replicas data saved."
+      cat all-replicas.json
+
+      # Now perform comparisons directly from the original files
+      jq --argfile test cache-test-data.json --argfile prep cache-prep-data.json --argfile prod cache-prod-data.json -n '
+        ($test.items[] | {name: (.metadata.name | split("-")[0]), replicas: .spec.replicas}) as $itemsTest
+        | ($prep.items[] | {name: (.metadata.name | split("-")[0]), replicas: .spec.replicas}) as $itemsPrep
+        | ($prod.items[] | {name: (.metadata.name | split("-")[0]), replicas: .spec.replicas}) as $itemsProd
+        | if ($itemsTest.name == $itemsPrep.name and $itemsTest.name == $itemsProd.name) then
+          {
+            BaseName: $itemsTest.name,
+            Test_replicas: $itemsTest.replicas,
+            Prep_replicas: $itemsPrep.replicas,
+            Prod_replicas: $itemsProd.replicas
+          }
+          | select(.Test_replicas != .Prep_replicas or .Test_replicas != .Prod_replicas or .Prep_replicas != .Prod_replicas)
+          else
+            empty
+          end
+      ' > differences.json
+
+      echo "Comparison of replicas across clusters completed. Differences:"
+      cat differences.json
