@@ -320,3 +320,35 @@ ____________________________________
 
       echo "Comparison of replicas across clusters completed. Differences:"
       cat differences.json
+
+
+
+
+- |
+      echo "Loading JSON data..."
+      jq --argfile test cache-test-data.json --argfile prep cache-prep-data.json --argfile prod cache-prod-data.json -n '
+        ($test.items[] | {name: (.metadata.name | split("-")[0]), test_replicas: .spec.replicas}) as $itemsTest
+        | ($prep.items[] | {name: (.metadata.name | split("-")[0]), prep_replicas: .spec.replicas}) as $itemsPrep
+        | ($prod.items[] | {name: (.metadata.name | split("-")[0]), prod_replicas: .spec.replicas}) as $itemsProd
+        | if ($itemsTest.name == $itemsPrep.name and $itemsTest.name == $itemsProd.name) then
+          {
+            BaseName: $itemsTest.name,
+            Test_replicas: $itemsTest.test_replicas,
+            Prep_replicas: $itemsPrep.prep_replicas,
+            Prod_replicas: $itemsProd.prod_replicas
+          }
+          | select(.Test_replicas != .Prep_replicas or .Test_replicas != .Prod_replicas or .Prep_replicas != .Prod_replicas)
+          else
+            empty
+          end
+      ' > differences.json
+      
+      # Create a new file with all the base names and their replicas
+      jq -s '
+        map({name: .BaseName, Test_replicas: .Test_replicas, Prep_replicas: .Prep_replicas, Prod_replicas: .Prod_replicas}) 
+      ' differences.json > all-replicas.json
+      
+      echo "Comparison of replicas across clusters completed. Differences:"
+      cat differences.json
+      echo "All replicas:"
+      cat all-replicas.json
