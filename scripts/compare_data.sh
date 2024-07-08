@@ -406,25 +406,24 @@ ____________________________________
 
 - |
       echo "Loading JSON data..."
-      # Collect and normalize data from all clusters, then save it
+      # Save all normalized names and replicas into all-replicas.json
       jq --argfile test cache-test-data.json --argfile prep cache-prep-data.json --argfile prod cache-prod-data.json -n '
-        ($test.items[] | {BaseName: (.metadata.name | split("-")[0]), Test_replicas: .spec.replicas}) as $itemsTest
-        | ($prep.items[] | {BaseName: (.metadata.name | split("-")[0]), Prep_replicas: .spec.replicas}) as $itemsPrep
-        | ($prod.items[] | {BaseName: (.metadata.name | split("-")[0]), Prod_replicas: .spec.replicas}) as $itemsProd
-        | [$itemsTest, $itemsPrep, $itemsProd]
-      ' | jq -s '
-        group_by(.BaseName) | map({
+        [
+          ($test.items[] | {BaseName: (.metadata.name | split("-")[0]), Test_replicas: .spec.replicas}),
+          ($prep.items[] | {BaseName: (.metadata.name | split("-")[0]), Prep_replicas: .spec.replicas}),
+          ($prod.items[] | {BaseName: (.metadata.name | split("-")[0]), Prod_replicas: .spec.replicas})
+        ] | flatten | group_by(.BaseName) | map({
           BaseName: .[0].BaseName,
           Test_replicas: map(select(.Test_replicas)) | .[].Test_replicas,
           Prep_replicas: map(select(.Prep_replicas)) | .[].Prep_replicas,
           Prod_replicas: map(select(.Prod_replicas)) | .[].Prod_replicas
         })
       ' > all-replicas.json
-
-      echo "All replicas data saved."
+      
+      echo "All BaseNames and their replicas across clusters have been saved to all-replicas.json:"
       cat all-replicas.json
 
-      # Now perform comparisons directly from the original files
+      # Now perform comparisons directly from the initial data
       jq --argfile test cache-test-data.json --argfile prep cache-prep-data.json --argfile prod cache-prod-data.json -n '
         ($test.items[] | {name: (.metadata.name | split("-")[0]), replicas: .spec.replicas}) as $itemsTest
         | ($prep.items[] | {name: (.metadata.name | split("-")[0]), replicas: .spec.replicas}) as $itemsPrep
@@ -442,5 +441,5 @@ ____________________________________
           end
       ' > differences.json
 
-      echo "Comparison of replicas across clusters completed. Differences:"
+      echo "Comparison of replicas across clusters completed. Differences found:"
       cat differences.json
