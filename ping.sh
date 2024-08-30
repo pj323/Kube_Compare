@@ -24,16 +24,21 @@
 
 
 
-      stages:
+     stages:
   - search
   - details
   - health-check
   - report
 
+before_script:
+  # Write kubeconfig content to temporary files
+  - echo "$KUBECONFIG_EDCO_CONTENT" > /tmp/kubeconfig_edco
+  - echo "$KUBECONFIG_EDCR_CONTENT" > /tmp/kubeconfig_edcr
+  - export KUBECONFIG_EDCO="/tmp/kubeconfig_edco"
+  - export KUBECONFIG_EDCR="/tmp/kubeconfig_edcr"
+
 variables:
   CLUSTERS: "EDCO EDCR"
-  KUBECONFIG_EDCO: "/path/to/edco/kubeconfig"
-  KUBECONFIG_EDCR: "/path/to/edcr/kubeconfig"
 
 search_instance:
   stage: search
@@ -90,5 +95,3 @@ generate_report:
   artifacts:
     paths:
       - reports/
-
-
