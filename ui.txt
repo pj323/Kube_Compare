@@ -1,1 +1,89 @@
 Proposal for a Custom Kubernetes UI using React
+
+
+2. Objective
+The goal is to build an intuitive, feature-rich Kubernetes UI that integrates with our existing pipeline and allows the team to:
+
+Monitor all pods, deployments, and services in real-time.
+Execute operational commands directly from the UI.
+Improve efficiency and response time in diagnosing and resolving issues.
+This will allow our team to have complete visibility and control over Kubernetes resources without relying on external teams like Emmet for running automated commands.
+
+3. Why Build a Custom Kubernetes UI? (5 Whys Analysis)
+1. Why do we need a UI in the first place?
+Kubernetes is a complex orchestration tool that requires real-time monitoring and management of several resources, such as pods, nodes, and services. While the CLI provides powerful capabilities, it lacks a real-time graphical representation that can quickly show the current state of the system.
+
+Solution: A UI can provide immediate insight into the health and performance of Kubernetes resources, making it easier to manage large-scale deployments.
+
+2. Why isn't the proposed Emmet team UI sufficient?
+Currently, the Emmet team handles automation tasks, running commands through their UI on request. This creates dependency and delays in action, especially when quick responses are needed for troubleshooting and diagnostics. We also execute all the commands via CLI but something we really need to focus is the 24H monitoring system.
+
+Solution: A custom-built UI gives our team direct access to Kubernetes resources, reducing the reliance on another team for operational tasks and improving response time with better monitoring.
+
+3. Why do we need control over executing commands?
+The ability to set role-based access control (RBAC) is crucial for ensuring that only authorized personnel can execute sensitive commands, such as restarting pods or scaling deployments, while other users may need read-only access to logs or performance metrics.
+
+Solution:
+By building our own custom UI, we can implement role-based access control that aligns with our operational needs. This will allow us to:
+
+Admins: Have full access to execute commands such as scaling deployments, restarting pods, or changing resource configurations.
+Developers: Access logs and pod statuses to troubleshoot application-level issues without interfering with operational settings.
+Support: Monitor system health, track metrics, and raise alerts based on performance without access to modify the state of the system.
+This level of customization ensures both security and operational efficiency, providing different levels of access based on team roles without compromising system stability.
+
+4. Why would a React-based solution be more beneficial?
+React is a flexible and scalable framework that allows us to build a highly interactive, dynamic UI. With React, we can create a modular dashboard that can be customized to show real-time data, logs, metrics, and much more with ease.
+
+Solution: Building the UI with React ensures a modern, responsive interface, which is customizable and maintainable by our team. React also integrates well with Kubernetes APIs, allowing us to fetch data in real time and update the UI dynamically.
+
+5. Why would having our own Kubernetes UI provide long-term benefits?
+The reliance on Emmet’s team for automation could cause slowdowns as our Kubernetes clusters grow in complexity. Having our own UI gives us the ability to scale, monitor, and manage the infrastructure as we see fit without third-party constraints. It also opens opportunities for extending functionality to include custom metrics, alerts, and automation.
+
+Solution: Building a custom UI gives us full control over feature development, allowing us to expand it with new capabilities as our Kubernetes ecosystem grows, such as real-time alerting, customized visualizations, and automated actions.
+
+4. Advantages of a Custom Kubernetes UI
+1. Autonomy and Control
+Building our own UI allows our team to operate independently without relying on another team (Emmet) for command execution or updates. This enhances our agility and efficiency, particularly in mission-critical scenarios where fast decision-making and execution are key.
+
+2. Real-time Monitoring and Management
+Our custom React-based Kubernetes dashboard would allow the monitoring of all pods, nodes, and services in real-time. We would have direct visibility into pod health, resource usage, logs, and events, enabling faster diagnosis and resolution of issues.
+
+3. Enhanced Troubleshooting and Diagnostics
+The UI would provide a consolidated view of all namespaces, pods, and services across our Kubernetes clusters. By incorporating features like log viewing, pod status monitoring, and resource metrics, we can reduce troubleshooting time significantly.
+
+4. Customization for Our Needs
+With a custom UI, we can add features and metrics specific to our pipeline and operational workflows. We can integrate directly with our CI/CD systems and other internal tools to provide a unified platform for all Kubernetes-related operations.
+
+5. Scalability and Flexibility
+React’s component-based architecture allows us to build a scalable UI that can evolve with our infrastructure. Whether it's adding new monitoring metrics, integrating Grafana for visualizations, or customizing workflows, the flexibility of React ensures that we can continuously extend and improve the UI as needed.
+
+5. Pipeline Integration
+Our existing pipeline can execute commands, but having a UI that integrates with this pipeline will provide added value:
+
+Real-time feedback: Our pipeline can be monitored directly from the UI, with logs, deployment status, and metrics all available on one screen.
+Manual interventions: While the pipeline is automated, there are cases where manual actions (like restarting a pod or scaling resources) are necessary. The UI would allow our team to take these actions without needing CLI access.
+Visualization of pipeline stages: A custom UI can visualize the pipeline stages, helping us track the progress of deployments and identify bottlenecks early.
+6. Proposed Features for the Kubernetes UI
+Pod Monitoring
+
+Real-time status and health of all pods across namespaces.
+Log retrieval and error tracking.
+Service and Deployment Management
+
+Ability to scale deployments, update services, and view resource usage (CPU, memory).
+Alerts for deployment failures or resource limits being reached.
+Command Execution
+
+Execute common Kubernetes commands (e.g., restarting a pod, scaling replicas) directly from the UI.
+Command history for auditing and rollback.
+Resource Usage Visualization
+
+Integrated with Prometheus and Grafana for real-time charts and metrics.
+Customizable views for different team needs.
+Security and Access Control
+
+Role-based access to ensure that only authorized team members can execute commands.
+7. Conclusion
+Building our own Kubernetes UI using React is a strategic move that will enhance our operational efficiency, reduce reliance on external teams, and provide us with the flexibility to adapt and scale our infrastructure management tools as needed. The investment in this UI will pay off in terms of faster response times, better control, and a more agile team capable of handling the complexities of modern Kubernetes environments.
+
+Would you like to add any specific details or sections to this document?
