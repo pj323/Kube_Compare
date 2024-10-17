@@ -189,3 +189,33 @@ Developer: Can view logs and resource usage but cannot perform any administrativ
 Support: Can monitor the system and view pod health but cannot modify any resources.
 8. Conclusion
 This Kubernetes UI design will provide a robust, user-friendly interface for managing and monitoring our Kubernetes clusters. By utilizing Node.js, React, and TypeScript, we ensure a modern, scalable solution that will enhance team productivity and reduce dependency on external automation teams. With features such as real-time pod monitoring, log tracking, and role-based access control, this UI will empower team members to efficiently manage Kubernetes workloads.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hi Team,
+
+I hope you're doing well.
+
+I’ve put together a design document for the Kubernetes UI that we discussed, outlining the approach we'll be taking with React, Node.js, and TypeScript, along with the proposed features such as Pod Monitoring, Deployment Management, RBAC, and more.
+
+Could you please take some time to review the document and share your thoughts or feedback? Your input is valuable, and we want to ensure this design aligns with everyone’s expectations and use cases.
+
+Link to the Design Document:
+
+[Insert Link to Document]
+
+Feel free to add comments, suggest changes, or ask questions. The design is still flexible, and any constructive feedback is welcome. The goal is to ensure we are all aligned before proceeding to the development phase.
+
+Looking forward to hearing from you all.
+
+Best regards,
