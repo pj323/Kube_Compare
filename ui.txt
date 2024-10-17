@@ -87,3 +87,105 @@ Role-based access to ensure that only authorized team members can execute comman
 Building our own Kubernetes UI using React is a strategic move that will enhance our operational efficiency, reduce reliance on external teams, and provide us with the flexibility to adapt and scale our infrastructure management tools as needed. The investment in this UI will pay off in terms of faster response times, better control, and a more agile team capable of handling the complexities of modern Kubernetes environments.
 
 Would you like to add any specific details or sections to this document?
+
+
+
+
+
+
+
+
+Kubernetes UI Design Document
+1. Overview
+This document outlines the design for a Kubernetes UI to be built using React, Node.js, and TypeScript. The goal is to provide an intuitive, user-friendly interface for monitoring, managing, and executing operations on a Kubernetes cluster. This UI will replace the reliance on external automation teams, giving the internal team more control over cluster operations. The design includes high-level architecture, key components, and a brief description of how we plan to implement the proposed features.
+
+2. Technology Stack
+Frontend:
+React: For building a dynamic and interactive UI.
+TypeScript: To ensure type safety and better developer experience.
+Axios: For handling API calls to the backend and Kubernetes API.
+Redux (optional): For state management (if needed for complex data flows).
+Backend:
+Node.js: To act as a proxy server for handling requests to Kubernetes API.
+Express.js: To set up API routes on the Node.js backend.
+Kubernetes Client (JavaScript): For interacting with the Kubernetes API from the Node.js backend.
+3. High-Level Architecture
+The UI will follow a client-server architecture. The React frontend communicates with a Node.js backend that acts as a proxy, handling interactions with the Kubernetes API.
+
+Frontend:
+Handles the user interface, displaying real-time Kubernetes information such as pod statuses, logs, and resources.
+Allows users to perform actions (e.g., scale a deployment, restart a pod) using interactive UI components.
+Backend:
+Acts as an intermediary between the frontend and the Kubernetes cluster.
+Uses Kubernetes API to fetch and modify resources.
+Implements Role-Based Access Control (RBAC) to determine what actions users can perform based on their role.
+4. Core Components
+Frontend Components (React)
+PodsList:
+
+Displays a list of all pods across namespaces.
+Shows the status of each pod (Running, Pending, Failed).
+Allows users to click on a pod to view detailed logs and resource usage.
+DeploymentManager:
+
+Allows users to manage Kubernetes deployments.
+Provides actions like scaling, updating, and deleting deployments.
+ResourceUsageChart:
+
+Displays real-time resource usage (CPU, Memory) for pods and nodes.
+Integrates with Prometheus or other metrics systems for real-time data.
+LogsViewer:
+
+Allows users to view and search through logs for specific pods or containers.
+Provides filtering options for logs based on severity or time range.
+CommandExecutor:
+
+Provides a UI for executing common Kubernetes commands (e.g., restart a pod).
+Displays command history for auditing purposes.
+RoleBasedAccessControl (RBAC):
+
+Restricts access to certain features (like scaling or deleting deployments) based on user roles (Admin, Developer, Support).
+Shows different UI elements based on the role of the logged-in user.
+Backend Components (Node.js/Express)
+API Proxy:
+Acts as a middleware between the frontend and Kubernetes API.
+Forwards API requests made from the React app to the appropriate Kubernetes endpoints.
+Authentication & Authorization:
+Uses Kubernetes RBAC or custom authentication middleware to ensure users can only perform actions they are authorized for.
+Metrics Aggregator:
+Pulls real-time metrics from Prometheus or Grafana to serve to the frontend.
+Command Executor:
+Receives command requests from the frontend (e.g., restart a pod) and executes them on the Kubernetes cluster.
+5. Proposed Features & Design Considerations
+1. Pod Monitoring
+Design: Create a real-time view of all pods across namespaces. Use the Kubernetes API to pull the pod status, container status, and resource usage (CPU, memory).
+Implementation: Fetch /api/v1/namespaces/{namespace}/pods from the backend, display the pods in a list with status indicators.
+2. Service and Deployment Management
+Design: Provide UI controls for scaling and updating deployments. Include a dropdown for selecting deployments and buttons for scaling up/down.
+Implementation: Fetch deployment data using /apis/apps/v1/namespaces/{namespace}/deployments and allow actions like PATCH requests to update replica counts.
+3. Log Retrieval and Error Tracking
+Design: Users should be able to view logs of individual pods and filter by severity or time range. Include a search bar for easier log navigation.
+Implementation: Use Kubernetes /api/v1/namespaces/{namespace}/pods/{name}/log endpoint to fetch logs and display them with search/filter options.
+4. Resource Usage Visualization
+Design: Show charts that represent CPU and memory usage of individual pods, nodes, and deployments.
+Implementation: Integrate Prometheus or Grafana for real-time data, fetching metrics via /api/v1/namespaces/{namespace}/pods/{name}/metrics.
+5. Command Execution
+Design: Allow users to execute common commands (like restarting a pod) directly from the UI with minimal friction.
+Implementation: Create a form for command inputs (e.g., pod name), which triggers a backend call to execute the corresponding Kubernetes command.
+6. Role-Based Access Control (RBAC)
+Design: Implement RBAC to control which users can access which features, such as scaling deployments or restarting pods.
+Implementation: Use Kubernetes RBAC API or custom middleware to determine access levels, and hide certain UI elements based on the user’s role.
+6. Data Flow
+Frontend (React):
+Sends API requests to the Node.js backend for pod status, logs, or executing Kubernetes commands.
+Backend (Node.js/Express):
+Receives requests from the frontend and forwards them to the Kubernetes API.
+Fetches data from Kubernetes, Prometheus, or Grafana and sends the response back to the frontend.
+7. RBAC Implementation
+To ensure that only authorized users can access specific functionalities, we will implement role-based access control. The user roles will include:
+
+Admin: Full access to all functionalities (e.g., scaling, restarting, deleting).
+Developer: Can view logs and resource usage but cannot perform any administrative tasks.
+Support: Can monitor the system and view pod health but cannot modify any resources.
+8. Conclusion
+This Kubernetes UI design will provide a robust, user-friendly interface for managing and monitoring our Kubernetes clusters. By utilizing Node.js, React, and TypeScript, we ensure a modern, scalable solution that will enhance team productivity and reduce dependency on external automation teams. With features such as real-time pod monitoring, log tracking, and role-based access control, this UI will empower team members to efficiently manage Kubernetes workloads.
