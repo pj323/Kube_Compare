@@ -145,3 +145,104 @@ const Home = () => {
 };
 
 export default Home;
+
+
+
+
+.pageContainer {
+  margin-left: 250px; /* Offset for the sidebar */
+  padding: 20px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.pageDescription {
+  font-size: 16px;
+  color: #555;
+}
+import React from 'react';
+import styles from './EDCOTest.module.css';
+
+const EDCOTest = () => {
+  return (
+    <div className={styles.pageContainer}>
+      <h1 className={styles.pageTitle}>EDCO - Test Environment</h1>
+      <p className={styles.pageDescription}>
+        Details about the EDCO Test environment will go here.
+      </p>
+    </div>
+  );
+};
+
+export default EDCOTest;
+
+
+
+
+
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar/Navbar';
+import Sidebar from './components/Sidebar/Sidebar';
+import Home from './components/Home/Home';
+import EDCOTest from './pages/EDCOTest/EDCOTest';
+import EDCOPrep from './pages/EDCOPrep/EDCOPrep';
+import EDCOProd from './pages/EDCOProd/EDCOProd';
+import EDCRTest from './pages/EDCRTest/EDCRTest';
+import EDCRPrep from './pages/EDCRPrep/EDCRPrep';
+import EDCRProd from './pages/EDCRProd/EDCRProd';
+
+const App = () => {
+  return (
+    <Router>
+      <div style={{ display: 'flex', height: '100vh' }}>
+        <Sidebar />
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <Navbar />
+          <div style={{ flex: 1 }}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/edco/test" element={<EDCOTest />} />
+              <Route path="/edco/prep" element={<EDCOPrep />} />
+              <Route path="/edco/prod" element={<EDCOProd />} />
+              <Route path="/edcr/test" element={<EDCRTest />} />
+              <Route path="/edcr/prep" element={<EDCRPrep />} />
+              <Route path="/edcr/prod" element={<EDCRProd />} />
+            </Routes>
+          </div>
+        </div>
+      </div>
+    </Router>
+  );
+};
+
+export default App;
+
+
+
+
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+
+
+
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+}
+
