@@ -154,3 +154,33 @@ body {
   width: 250px;
   flex-shrink: 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.navbar {
+  background-color: #1976d2;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.navbarTitle {
+  font-size: 20px;
+  font-weight: bold;
+}
+
