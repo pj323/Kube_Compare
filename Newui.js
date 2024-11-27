@@ -106,3 +106,42 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
+
+
+
+
+.homeContainer {
+  margin-left: 250px; /* Offset for the sidebar */
+  padding: 20px;
+}
+
+.homeTitle {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.homeDescription {
+  font-size: 16px;
+  color: #555;
+}
+
+
+
+
+import React from 'react';
+import styles from './Home.module.css';
+
+const Home = () => {
+  return (
+    <div className={styles.homeContainer}>
+      <h1 className={styles.homeTitle}>Welcome to the Kubernetes Dashboard</h1>
+      <p className={styles.homeDescription}>
+        Select a cluster and environment from the sidebar to view details.
+      </p>
+    </div>
+  );
+};
+
+export default Home;
