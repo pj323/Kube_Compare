@@ -19,3 +19,5 @@ body {
 
 
 import './styles/global.css';
+
+npm install react@18 react-dom@18 react-scripts typescript @testing-library/react @testing-library/user-event web-vitals --legacy-peer-deps
