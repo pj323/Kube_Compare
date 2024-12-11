@@ -159,3 +159,51 @@ export default Home;
 }
 
 
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar/Navbar';
+import Sidebar from './components/Sidebar/Sidebar';
+import Home from './pages/Home/Home';
+import EDCOTest from './pages/EDCO/Test';
+import EDCOProd from './pages/EDCO/Prod';
+import EDCOPrep from './pages/EDCO/Prep';
+import EDCRTest from './pages/EDCR/Test';
+import EDCRProd from './pages/EDCR/Prod';
+import EDCRPrep from './pages/EDCR/Prep';
+
+const App: React.FC = () => {
+  return (
+    <Router>
+      <Navbar />
+      <Sidebar />
+      <div style={{ marginLeft: '250px', padding: '20px' }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/edco/test" element={<EDCOTest />} />
+          <Route path="/edco/prep" element={<EDCOPrep />} />
+          <Route path="/edco/prod" element={<EDCOProd />} />
+          <Route path="/edcr/test" element={<EDCRTest />} />
+          <Route path="/edcr/prep" element={<EDCRPrep />} />
+          <Route path="/edcr/prod" element={<EDCRProd />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+};
+
+export default App;
+
+
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './styles/global.css';
+import App from './App';
+
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
