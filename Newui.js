@@ -86,56 +86,92 @@ body {
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Drawer, List, ListItem, ListItemText, Typography } from '@mui/material';
 import styles from './Sidebar.module.css';
 
 const Sidebar: React.FC = () => {
   return (
-    <div className={styles.sidebar}>
-      <ul>
-        <li><Link to="/">Home</Link></li>
-        <li><strong>EDCO</strong></li>
-        <li><Link to="/edco/test">Test</Link></li>
-        <li><Link to="/edco/prep">Prep</Link></li>
-        <li><Link to="/edco/prod">Prod</Link></li>
-        <li><strong>EDCR</strong></li>
-        <li><Link to="/edcr/test">Test</Link></li>
-        <li><Link to="/edcr/prep">Prep</Link></li>
-        <li><Link to="/edcr/prod">Prod</Link></li>
-      </ul>
-    </div>
+    <Drawer
+      variant="permanent"
+      classes={{ paper: styles.drawerPaper }}
+      anchor="left"
+    >
+      <div className={styles.sidebarHeader}>
+        <Typography variant="h6" className={styles.title}>
+          Kubernetes Dashboard
+        </Typography>
+      </div>
+      <List>
+        <ListItem>
+          <ListItemText primary={<strong>Home</strong>} />
+        </ListItem>
+        <ListItem button component={Link} to="/">
+          <ListItemText primary="Home" />
+        </ListItem>
+        <ListItem>
+          <ListItemText primary={<strong>EDCO</strong>} />
+        </ListItem>
+        <ListItem button component={Link} to="/edco/test">
+          <ListItemText primary="Test" />
+        </ListItem>
+        <ListItem button component={Link} to="/edco/prep">
+          <ListItemText primary="Prep" />
+        </ListItem>
+        <ListItem button component={Link} to="/edco/prod">
+          <ListItemText primary="Prod" />
+        </ListItem>
+        <ListItem>
+          <ListItemText primary={<strong>EDCR</strong>} />
+        </ListItem>
+        <ListItem button component={Link} to="/edcr/test">
+          <ListItemText primary="Test" />
+        </ListItem>
+        <ListItem button component={Link} to="/edcr/prep">
+          <ListItemText primary="Prep" />
+        </ListItem>
+        <ListItem button component={Link} to="/edcr/prod">
+          <ListItemText primary="Prod" />
+        </ListItem>
+      </List>
+    </Drawer>
   );
 };
 
 export default Sidebar;
 
 
-.sidebar {
+
+.drawerPaper {
   width: 250px;
-  height: 100vh;
   background-color: #f5f5f5;
-  position: fixed;
-  padding: 20px;
   border-right: 1px solid #ddd;
 }
 
-ul {
-  list-style: none;
+.sidebarHeader {
+  padding: 16px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.title {
+  font-weight: bold;
+}
+
+.MuiList-root {
   padding: 0;
 }
 
-li {
-  margin: 15px 0;
+.MuiListItem-root {
+  padding: 8px 16px;
 }
 
-a {
-  text-decoration: none;
-  color: #333;
+.MuiListItemText-primary {
+  font-size: 16px;
 }
 
-a:hover {
-  color: #1976d2;
+.MuiListItem-root:hover {
+  background-color: #e0e0e0;
 }
-
 
 
 import React from 'react';
@@ -193,6 +229,7 @@ const App: React.FC = () => {
 };
 
 export default App;
+
 
 
 
