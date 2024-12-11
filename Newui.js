@@ -26,3 +26,29 @@ npm install @mui/material @emotion/react @emotion/styled
 
 npm install react-router-dom @types/react-router-dom
 
+
+
+import React from 'react';
+import styles from './Navbar.module.css';
+
+const Navbar: React.FC = () => {
+  return (
+    <div className={styles.navbar}>
+      <h1>Kubernetes Dashboard</h1>
+    </div>
+  );
+};
+
+export default Navbar;
+
+
+
+.navbar {
+  background-color: #1976d2;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
