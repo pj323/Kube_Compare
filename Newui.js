@@ -1,92 +1,13 @@
-npx create-react-app my-dashboard --template typescript
-cd my-dashboard
-
-
-npm install @mui/material @emotion/react @emotion/styled react-router-dom @types/react-router-dom http-proxy-middleware
-
-
-touch src/styles/global.css
-
-
-body {
-  margin: 0;
-  font-family: 'Roboto', sans-serif;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-
-import './styles/global.css';
-
-npm install react@18 react-dom@18 react-scripts typescript @testing-library/react @testing-library/user-event web-vitals --legacy-peer-deps
-npm install @mui/material @emotion/react @emotion/styled
-
-
-npm install react-router-dom @types/react-router-dom
-
-
-
-import React from 'react';
-import styles from './Navbar.module.css';
-
-const Navbar: React.FC = () => {
-  return (
-    <div className={styles.navbar}>
-      <h1>Kubernetes Dashboard</h1>
-    </div>
-  );
-};
-
-export default Navbar;
-
-
-
-
-.navbar {
-  background-color: #1976d2;
-  color: white;
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-
-
-
-
-/* Reset default browser styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Body styles */
-body {
-  font-family: 'Roboto', sans-serif;
-  background-color: #f9f9f9;
-  color: #333;
-}
-
-/* Utility classes */
-.text-center {
-  text-align: center;
-}
-
-.hidden {
-  display: none;
-}
-
-
-
-
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Drawer, List, ListItem, ListItemText, Typography } from '@mui/material';
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Typography,
+} from '@mui/material';
 import styles from './Sidebar.module.css';
 
 const Sidebar: React.FC = () => {
@@ -102,35 +23,46 @@ const Sidebar: React.FC = () => {
         </Typography>
       </div>
       <List>
-        <ListItem>
-          <ListItemText primary={<strong>Home</strong>} />
-        </ListItem>
-        <ListItem button component={Link} to="/">
-          <ListItemText primary="Home" />
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/">
+            <ListItemText primary="Home" />
+          </ListItemButton>
         </ListItem>
         <ListItem>
           <ListItemText primary={<strong>EDCO</strong>} />
         </ListItem>
-        <ListItem button component={Link} to="/edco/test">
-          <ListItemText primary="Test" />
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/edco/test">
+            <ListItemText primary="Test" />
+          </ListItemButton>
         </ListItem>
-        <ListItem button component={Link} to="/edco/prep">
-          <ListItemText primary="Prep" />
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/edco/prep">
+            <ListItemText primary="Prep" />
+          </ListItemButton>
         </ListItem>
-        <ListItem button component={Link} to="/edco/prod">
-          <ListItemText primary="Prod" />
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/edco/prod">
+            <ListItemText primary="Prod" />
+          </ListItemButton>
         </ListItem>
         <ListItem>
           <ListItemText primary={<strong>EDCR</strong>} />
         </ListItem>
-        <ListItem button component={Link} to="/edcr/test">
-          <ListItemText primary="Test" />
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/edcr/test">
+            <ListItemText primary="Test" />
+          </ListItemButton>
         </ListItem>
-        <ListItem button component={Link} to="/edcr/prep">
-          <ListItemText primary="Prep" />
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/edcr/prep">
+            <ListItemText primary="Prep" />
+          </ListItemButton>
         </ListItem>
-        <ListItem button component={Link} to="/edcr/prod">
-          <ListItemText primary="Prod" />
+        <ListItem disablePadding>
+          <ListItemButton component={Link} to="/edcr/prod">
+            <ListItemText primary="Prod" />
+          </ListItemButton>
         </ListItem>
       </List>
     </Drawer>
@@ -138,6 +70,9 @@ const Sidebar: React.FC = () => {
 };
 
 export default Sidebar;
+
+
+
 
 
 
@@ -157,41 +92,41 @@ export default Sidebar;
   font-weight: bold;
 }
 
-.MuiList-root {
-  padding: 0;
-}
-
-.MuiListItem-root {
-  padding: 8px 16px;
-}
-
-.MuiListItemText-primary {
-  font-size: 16px;
-}
-
-.MuiListItem-root:hover {
+.MuiListItemButton-root:hover {
   background-color: #e0e0e0;
 }
 
 
-import React from 'react';
-import styles from './Home.module.css';
 
-const Home: React.FC = () => {
+
+import React from 'react';
+import styles from './Navbar.module.css';
+
+const Navbar: React.FC = () => {
   return (
-    <div className={styles.page}>
-      <h1>Welcome to the Kubernetes Dashboard</h1>
-      <p>Select a cluster from the sidebar to view details.</p>
+    <div className={styles.navbar}>
+      <h1>Kubernetes Dashboard</h1>
     </div>
   );
 };
 
-export default Home;
+export default Navbar;
 
 
-.page {
-  margin-left: 250px;
-  padding: 20px;
+
+.navbar {
+  background-color: #1976d2;
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  width: calc(100% - 250px); /* Subtract the sidebar width */
+  z-index: 1000;
+  top: 0;
+  left: 250px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -211,36 +146,25 @@ import EDCRPrep from './pages/EDCR/Prep';
 const App: React.FC = () => {
   return (
     <Router>
-      <Navbar />
-      <Sidebar />
-      <div style={{ marginLeft: '250px', padding: '20px' }}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/edco/test" element={<EDCOTest />} />
-          <Route path="/edco/prep" element={<EDCOPrep />} />
-          <Route path="/edco/prod" element={<EDCOProd />} />
-          <Route path="/edcr/test" element={<EDCRTest />} />
-          <Route path="/edcr/prep" element={<EDCRPrep />} />
-          <Route path="/edcr/prod" element={<EDCRProd />} />
-        </Routes>
+      <div style={{ display: 'flex' }}>
+        <Sidebar />
+        <div style={{ flexGrow: 1, marginTop: '64px' }}>
+          <Navbar />
+          <div style={{ marginLeft: '250px', padding: '20px' }}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/edco/test" element={<EDCOTest />} />
+              <Route path="/edco/prep" element={<EDCOPrep />} />
+              <Route path="/edco/prod" element={<EDCOProd />} />
+              <Route path="/edcr/test" element={<EDCRTest />} />
+              <Route path="/edcr/prep" element={<EDCRPrep />} />
+              <Route path="/edcr/prod" element={<EDCRProd />} />
+            </Routes>
+          </div>
+        </div>
       </div>
     </Router>
   );
 };
 
 export default App;
-
-
-
-
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './styles/global.css';
-import App from './App';
-
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
-
