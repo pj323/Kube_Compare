@@ -43,6 +43,7 @@ export default Navbar;
 
 
 
+
 .navbar {
   background-color: #1976d2;
   color: white;
@@ -51,6 +52,7 @@ export default Navbar;
   align-items: center;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 
 
 
@@ -77,4 +79,83 @@ body {
 .hidden {
   display: none;
 }
+
+
+
+
+
+import React from 'react';
+import { Link } from 'react-router-dom';
+import styles from './Sidebar.module.css';
+
+const Sidebar: React.FC = () => {
+  return (
+    <div className={styles.sidebar}>
+      <ul>
+        <li><Link to="/">Home</Link></li>
+        <li><strong>EDCO</strong></li>
+        <li><Link to="/edco/test">Test</Link></li>
+        <li><Link to="/edco/prep">Prep</Link></li>
+        <li><Link to="/edco/prod">Prod</Link></li>
+        <li><strong>EDCR</strong></li>
+        <li><Link to="/edcr/test">Test</Link></li>
+        <li><Link to="/edcr/prep">Prep</Link></li>
+        <li><Link to="/edcr/prod">Prod</Link></li>
+      </ul>
+    </div>
+  );
+};
+
+export default Sidebar;
+
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #f5f5f5;
+  position: fixed;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin: 15px 0;
+}
+
+a {
+  text-decoration: none;
+  color: #333;
+}
+
+a:hover {
+  color: #1976d2;
+}
+
+
+
+import React from 'react';
+import styles from './Home.module.css';
+
+const Home: React.FC = () => {
+  return (
+    <div className={styles.page}>
+      <h1>Welcome to the Kubernetes Dashboard</h1>
+      <p>Select a cluster from the sidebar to view details.</p>
+    </div>
+  );
+};
+
+export default Home;
+
+
+.page {
+  margin-left: 250px;
+  padding: 20px;
+}
+
 
