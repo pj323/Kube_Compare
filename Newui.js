@@ -42,11 +42,9 @@ const Navbar: React.FC = () => {
 export default Navbar;
 
 
-
 .navbar {
   background-color: #d32f2f; /* Red color for Navbar */
 }
-
 
 
 import React from 'react';
@@ -115,7 +113,6 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 export default Sidebar;
 
 
-
 .sidebar {
   width: 250px;
   padding: 16px;
@@ -159,6 +156,7 @@ const App: React.FC = () => {
 };
 
 export default App;
+
 
 
 /* Global Reset */
